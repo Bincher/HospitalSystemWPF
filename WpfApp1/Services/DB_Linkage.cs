@@ -11,7 +11,7 @@ namespace DB_Linkage.Service
 {
     public class MySQLManager
     {
-        private readonly string connectionString = "Server=localhost;Database=hospital;Port=3306;User=root;Password=root";
+        private readonly string connectionString = "Server=localhost;Database=hospital;Port=3306;User=root;Password=password";
 
         public MySqlConnection Connection { get; private set; }
 
