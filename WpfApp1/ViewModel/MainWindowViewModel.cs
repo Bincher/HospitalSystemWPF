@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DB_Linkage.Service;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,17 +25,11 @@ namespace WpfApp1.ViewModel
             set => SetProperty(ref _selectedPerson, value);
         }
 
+        private readonly MySQLManager _dbManager;
         public MainWindowViewModel()
         {
-            Doctor = new List<Doctor>
-            {
-                new Doctor{Id = 111111, Name = "김지찬", Department = "정형외과", Age = 31},
-                new Doctor{Id = 111112, Name = "이재현", Department = "정형외과", Age = 30},
-                new Doctor{Id = 111113, Name = "김영웅", Department = "성형외과", Age = 35},
-                new Doctor{Id = 112111, Name = "박병호", Department = "성형외과", Age = 44},
-                new Doctor{Id = 112112, Name = "류지혁", Department = "피부과", Age = 52},
-            };
+            _dbManager = new MySQLManager();
+            Doctor = _dbManager.GetDoctors(); // 데이터베이스에서 의사 정보를 가져옴
         }
-
     }
 }

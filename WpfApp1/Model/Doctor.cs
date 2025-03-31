@@ -40,14 +40,31 @@ namespace WpfApp1.Models
             }
         }
 
-        private int _age;
-        public int Age
+        private DateTime? _birth;
+        public DateTime? Birth
         {
-            get { return _age; }
+            get { return _birth; }
             set
             {
-                SetProperty(ref _age, value);
+                SetProperty(ref _birth, value);
             }
+        }
+
+        private int _gender;
+        public int Gender
+        {
+            get { return _gender; }
+            set
+            {
+                SetProperty(ref _gender, value);
+            }
+        }
+
+        private string? _profileImage;
+        public string? ProfileImage
+        {
+            get { return _profileImage; }
+            set { SetProperty(ref _profileImage, value); }
         }
     }
 }
