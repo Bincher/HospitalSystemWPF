@@ -11,7 +11,7 @@ namespace DB_Linkage.Service
 {
     public class MySQLManager
     {
-        private readonly string connectionString = "Server=localhost;Database=hospital;Port=3306;User=root;Password=password";
+        private readonly string connectionString = "Server=localhost;Database=hospital;Port=3306;User=root;Password=root";
 
         public MySqlConnection Connection { get; private set; }
 
@@ -44,6 +44,7 @@ namespace DB_Linkage.Service
                 Connection.Close();
             }
         }
+
 
         public List<Doctor> GetDoctors()
         {
@@ -81,6 +82,43 @@ namespace DB_Linkage.Service
 
             return doctors;
         }
+
+        public List<Patient> GetPatients()
+        {
+            List<Patient> patients = new List<Patient>();
+            string query = "SELECT id, name, gender, birth, profile_image FROM patient";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        patients.Add(new Patient
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("name"),
+                            Gender = reader.IsDBNull(reader.GetOrdinal("gender")) ? 0 : (reader.GetString("gender") == "남성" ? 1 : 0),
+                            Birth = reader.IsDBNull(reader.GetOrdinal("birth")) ? null : (DateTime?)reader.GetDateTime("birth"),
+                            ProfileImage = reader.IsDBNull(reader.GetOrdinal("profile_image")) ? null : reader.GetString("profile_image")
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                CloseConnection();
+            }
+
+            return patients;
+        }
+
     }
 
 }
