@@ -100,8 +100,8 @@ namespace DB_Linkage.Service
                         {
                             Id = reader.GetInt32("id"),
                             Name = reader.GetString("name"),
-                            Gender = reader.IsDBNull(reader.GetOrdinal("gender")) ? 0 : (reader.GetString("gender") == "남성" ? 1 : 0),
-                            Birth = reader.IsDBNull(reader.GetOrdinal("birth")) ? null : (DateTime?)reader.GetDateTime("birth"),
+                            Gender = reader.GetByte("gender"),
+                            Birth = reader.GetDateTime("birth"),
                             ProfileImage = reader.IsDBNull(reader.GetOrdinal("profile_image")) ? null : reader.GetString("profile_image")
                         });
                     }

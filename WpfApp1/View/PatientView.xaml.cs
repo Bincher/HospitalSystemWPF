@@ -24,5 +24,9 @@ namespace WpfApp1.View
         {
             InitializeComponent();
         }
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close(); // 창 닫기
+        }
     }
 }
