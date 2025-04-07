@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using MySql.Data.MySqlClient;
+using WpfApp1.Model;
 using WpfApp1.Models;
 
 namespace DB_Linkage.Service
@@ -117,6 +118,54 @@ namespace DB_Linkage.Service
             }
 
             return patients;
+        }
+
+        public List<Treatment> GetTreatment()
+        {
+            List<Treatment> treatments = new List<Treatment>();
+            string query = @"
+                SELECT 
+                    t.id AS TreatmentId,
+                    t.date AS TreatmentDate,
+                    d.department AS DoctorDepartment,
+                    d.name AS DoctorName,
+                    p.name AS PatientName,
+                    t.complete AS TreatmentComplete
+                FROM 
+                    treatment t
+                INNER JOIN doctor d ON t.doctor_id = d.id
+                INNER JOIN patient p ON t.patient_id = p.id";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        treatments.Add(new Treatment
+                        {
+                            Id = reader.GetInt32("TreatmentId"),
+                            Date = reader.GetString("TreatmentDate"),
+                            DoctorDepartment = reader.GetString("DoctorDepartment"),
+                            DoctorName = reader.GetString("DoctorName"),
+                            PatientName = reader.GetString("PatientName"),
+                            Complete = reader.GetBoolean("TreatmentComplete")
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                CloseConnection();
+            }
+
+            return treatments;
         }
 
     }
