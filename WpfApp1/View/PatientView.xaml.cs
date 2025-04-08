@@ -28,5 +28,26 @@ namespace WpfApp1.View
         {
             this.Close(); // 창 닫기
         }
+
+        private void AddPatientClick(object sender, RoutedEventArgs e)
+        {
+            AddPatientWindow addPatientWindow = new AddPatientWindow();
+
+            if (addPatientWindow.ShowDialog() == true)
+            {
+                // 새 환자 추가 후 목록 새로고침
+                LoadPatients();
+            }
+        }
+
+        private void LoadPatients()
+        {
+            // DoctorViewModel이 있다면 해당 메서드 호출
+            var viewModel = DataContext as PatientViewModel;
+            if (viewModel != null)
+            {
+                viewModel.LoadPatientData();
+            }
+        }
     }
 }

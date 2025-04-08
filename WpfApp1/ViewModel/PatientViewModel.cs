@@ -43,7 +43,7 @@ namespace WpfApp1.ViewModel
             LoadPatientData();
         }
 
-        private void LoadPatientData()
+        public void LoadPatientData()
         {
             // 데이터베이스에서 환자 정보 가져오기
             Patients = _dbManager.GetPatients();

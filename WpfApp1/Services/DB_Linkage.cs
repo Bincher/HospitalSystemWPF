@@ -197,6 +197,35 @@ namespace DB_Linkage.Service
                 CloseConnection();
             }
         }
+
+        public bool AddPatient(Patient patient)
+        {
+            string query = "INSERT INTO patient (name, birth, gender, profile_image) VALUES (@Name, @Birth, @Gender, @ProfileImage)";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Name", patient.Name);
+                    cmd.Parameters.AddWithValue("@Birth", patient.Birth);
+                    cmd.Parameters.AddWithValue("@Gender", patient.Gender);
+                    cmd.Parameters.AddWithValue("@ProfileImage", patient.ProfileImage ?? (object)DBNull.Value);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
     }
 
 }
