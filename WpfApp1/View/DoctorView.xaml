@@ -24,6 +24,9 @@
         <!-- 뒤로 가기 버튼 -->
         <Button Content="뒤로 가기" Click="GoBackButton_Click" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 
+        <!-- 뒤로 가기 버튼 -->
+        <Button Content="의사 추가" Click="AddDoctorClick" HorizontalAlignment="Right" Margin="0,0,0,10"/>
+
         <!-- 의사 목록 및 상세 정보 -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

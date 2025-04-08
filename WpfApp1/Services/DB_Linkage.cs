@@ -168,6 +168,35 @@ namespace DB_Linkage.Service
             return treatments;
         }
 
+        public bool AddDoctor(Doctor doctor)
+        {
+            string query = "INSERT INTO doctor (name, department, birth, gender, profile_image) VALUES (@Name, @Department, @Birth, @Gender, @ProfileImage)";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Name", doctor.Name);
+                    cmd.Parameters.AddWithValue("@Department", doctor.Department);
+                    cmd.Parameters.AddWithValue("@Birth", doctor.Birth);
+                    cmd.Parameters.AddWithValue("@Gender", doctor.Gender);
+                    cmd.Parameters.AddWithValue("@ProfileImage", doctor.ProfileImage ?? (object)DBNull.Value);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
     }
 
 }

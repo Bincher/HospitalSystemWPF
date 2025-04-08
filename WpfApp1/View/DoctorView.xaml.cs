@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfApp1.ViewModel;
 
 namespace WpfApp1.View
 {
@@ -27,5 +28,27 @@ namespace WpfApp1.View
         {
             this.Close(); // 창 닫기
         }
+        private void AddDoctorClick(object sender, RoutedEventArgs e)
+        {
+            AddDoctorWindow addDoctorWindow = new AddDoctorWindow();
+
+            if (addDoctorWindow.ShowDialog() == true)
+            {
+                // 새 의사 추가 후 목록 새로고침
+                LoadDoctors();
+            }
+        }
+
+        private void LoadDoctors()
+        {
+            // DoctorViewModel이 있다면 해당 메서드 호출
+            var viewModel = DataContext as DoctorViewModel;
+            if (viewModel != null)
+            {
+                viewModel.LoadDoctorData();
+            }
+        }
+
+
     }
 }
