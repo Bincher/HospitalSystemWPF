@@ -226,6 +226,35 @@ namespace DB_Linkage.Service
                 CloseConnection();
             }
         }
+
+        public bool AddTreatment(Treatment treatment)
+        {
+            string query = "INSERT INTO treatment (date, complete, doctor_id, patient_id) VALUES (@DateTimeValue, @CompleteStatus, @DoctorIdValue, @PatientIdValue)";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@DateTimeValue", treatment.Date);
+                    cmd.Parameters.AddWithValue("@CompleteStatus", treatment.Complete ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@DoctorIdValue", treatment.DoctorId);
+                    cmd.Parameters.AddWithValue("@PatientIdValue", treatment.PatientId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during saving treatment data: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
     }
 
 }

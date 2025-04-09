@@ -14,7 +14,7 @@
         <ToolBar DockPanel.Dock="Top" Background="LightGray">
             <Button Content="환자" Command="{Binding ShowPatientCommand}" Width="100" Margin="5"/>
             <Button Content="의사" Command="{Binding ShowDoctorCommand}" Width="100" Margin="5"/>
-            <Button Content="+" Width="50" Margin="5,0,0,0" HorizontalAlignment="Right" Command="{Binding AddCommand}"/>
+            <Button Content="+" Command="{Binding AddTreatmentCommand}" Width="50" Margin="5,0,0,0" HorizontalAlignment="Right"/>
         </ToolBar>
 
         <Grid Margin="10">

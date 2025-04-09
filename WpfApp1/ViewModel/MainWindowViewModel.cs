@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using WpfApp1.Model;
 using WpfApp1.Models;
@@ -17,7 +18,7 @@ namespace WpfApp1.ViewModel
     {
         public ICommand ShowPatientCommand { get; }
         public ICommand ShowDoctorCommand { get; }
-        public ICommand AddCommand { get; }
+        public ICommand AddTreatmentCommand { get; }
 
         // DefaultView 속성 추가
         public object DefaultView { get; private set; }
@@ -61,11 +62,6 @@ namespace WpfApp1.ViewModel
             }
         }
 
-        private void AddNewItem()
-        {
-            System.Diagnostics.Debug.WriteLine("+ 버튼 클릭됨");
-        }
-
         private IList<Treatment> _treatments;
         public IList<Treatment> Treatments
         {
@@ -73,7 +69,22 @@ namespace WpfApp1.ViewModel
             set => SetProperty(ref _treatments, value);
         }
 
+        public void LoadTreatmentData()
+        {
+            Treatments = _dbManager.GetTreatment();
+        }
 
+        private void AddTreatment()
+        {
+            // AddTreatmentWindow 열기
+            AddTreatmentWindow addTreatmentWindow = new AddTreatmentWindow();
+
+            if (addTreatmentWindow.ShowDialog() == true)
+            {
+                // 새 진료 추가 후 목록 새로고침
+                LoadTreatmentData();
+            }
+        }
 
         private readonly MySQLManager _dbManager;
 
@@ -88,7 +99,7 @@ namespace WpfApp1.ViewModel
 
             ShowPatientCommand = new RelayCommand(ShowPatient);
             ShowDoctorCommand = new RelayCommand(ShowDoctor);
-            AddCommand = new RelayCommand(AddNewItem);
+            AddTreatmentCommand = new RelayCommand(AddTreatment);
         }
     }
 }

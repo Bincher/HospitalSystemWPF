@@ -16,6 +16,20 @@ namespace WpfApp1.Model
             set => SetProperty(ref _id, value);
         }
 
+        private int _doctorId;
+        public int DoctorId
+        {
+            get => _doctorId;
+            set => SetProperty(ref _doctorId, value);
+        }
+
+        private int _patientId;
+        public int PatientId
+        {
+            get => _patientId;
+            set => SetProperty(ref _patientId, value);
+        }
+
         private string? _date;
         public string? Date
         {
