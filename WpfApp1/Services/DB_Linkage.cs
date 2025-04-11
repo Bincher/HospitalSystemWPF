@@ -198,6 +198,68 @@ namespace DB_Linkage.Service
             }
         }
 
+        public bool DeleteDoctor(int doctorId)
+        {
+            string query = "DELETE FROM doctor WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", doctorId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during deleting doctor: {ex.Message}");
+
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        public bool UpdateDoctor(Doctor doctor)
+        {
+            string query = "UPDATE doctor SET name=@Name, department=@Department, birth=@Birth, gender=@Gender, profile_image=@ProfileImage WHERE id=@Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", doctor.Id);
+                    cmd.Parameters.AddWithValue("@Name", doctor.Name);
+                    cmd.Parameters.AddWithValue("@Department", doctor.Department);
+                    cmd.Parameters.AddWithValue("@Birth", doctor.Birth);
+                    cmd.Parameters.AddWithValue("@Gender", doctor.Gender);
+                    cmd.Parameters.AddWithValue("@ProfileImage", doctor.ProfileImage ?? (object)DBNull.Value);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during updating doctor: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
         public bool AddPatient(Patient patient)
         {
             string query = "INSERT INTO patient (name, birth, gender, profile_image) VALUES (@Name, @Birth, @Gender, @ProfileImage)";

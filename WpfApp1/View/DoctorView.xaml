@@ -7,7 +7,7 @@
         xmlns:converters="clr-namespace:WpfApp1.ViewModel.Converters"
         mc:Ignorable="d"
         Title="의사 목록" Height="450" Width="800">
-    
+
     <Window.Resources>
         <!-- GenderConverter 리소스 등록 -->
         <converters:GenderConverter x:Key="GenderConverter"/>
@@ -19,6 +19,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <!-- 수정 및 삭제 버튼 영역 -->
         </Grid.RowDefinitions>
 
         <!-- 뒤로 가기 버튼 -->
@@ -48,8 +50,6 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-
-
             <!-- 의사 상세 정보 -->
             <StackPanel Grid.Column="1" Margin="10,0,0,0" DataContext="{Binding SelectedDoctor}">
                 <TextBlock Text="의사 상세 정보" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
@@ -68,6 +68,7 @@
                     </Image>
                 </Border>
 
+                <!-- 상세 정보 표시 -->
                 <StackPanel Orientation="Horizontal" Margin="0,5">
                     <TextBlock Text="ID: " FontWeight="Bold" Width="100"/>
                     <TextBlock Text="{Binding Id}"/>
@@ -94,5 +95,22 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
+
+        <!-- 수정 및 삭제 버튼 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <!-- 수정 버튼 -->
+            <Button Content="수정"
+                    Command="{Binding EditDoctorCommand}"
+                    CommandParameter="{Binding SelectedDoctor}"
+                    Width="100"
+                    Margin ="10"/>
+
+            <!-- 삭제 버튼 -->
+            <Button Content ="삭제"
+                    Command="{Binding DeleteDoctorCommand}"
+                    CommandParameter="{Binding SelectedDoctor}"
+                    Width ="100"
+                    Margin ="10"/>
+        </StackPanel>
     </Grid>
 </Window>

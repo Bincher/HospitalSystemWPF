@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +26,8 @@ namespace WpfApp1.View
     {
         private string selectedImagePath;
         private readonly MySQLManager _dbManager;
+        private bool _isEditMode = false; // 수정 모드 여부
+        private int _doctorId; // 수정할 의사의 ID
 
         public Doctor NewDoctor { get; private set; }
 
@@ -112,6 +115,7 @@ namespace WpfApp1.View
             // 새 의사 객체 생성
             NewDoctor = new Doctor
             {
+                Id = _doctorId,
                 Name = txtName.Text,
                 Department = txtDepartment.Text,
                 Birth = dpBirth.SelectedDate.Value,
@@ -122,22 +126,59 @@ namespace WpfApp1.View
             // 데이터베이스에 저장
             try
             {
-                bool success = _dbManager.AddDoctor(NewDoctor);
+                bool success;
 
-                if (success)
+                if (_isEditMode)
                 {
-                    MessageBox.Show("의사 정보가 성공적으로 저장되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
-                    DialogResult = true;
-                    Close();
+                    // 수정 모드: 데이터 업데이트
+                    success = _dbManager.UpdateDoctor(NewDoctor);
+                    if (success)
+                        MessageBox.Show("의사 정보가 성공적으로 수정되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else
+                        MessageBox.Show("의사 정보 수정에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    MessageBox.Show("의사 정보 저장에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // 추가 모드: 데이터 삽입
+                    success = _dbManager.AddDoctor(NewDoctor);
+                    if (success)
+                        MessageBox.Show("의사 정보가 성공적으로 추가되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else
+                        MessageBox.Show("의사 정보 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+
+                if (success)
+                    DialogResult = true;
+
+                Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"데이터 저장 중 오류 발생: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // 기존 데이터를 설정하는 메서드 (수정 모드 활성화)
+        public void SetInitialData(Doctor doctor)
+        {
+            _isEditMode = true; // 수정 모드 활성화
+            _doctorId = doctor.Id; // 수정할 의사의 ID 저장
+
+            txtName.Text = doctor.Name;
+            dpBirth.SelectedDate = doctor.Birth;
+            txtDepartment.Text = doctor.Department;
+
+            if (doctor.Gender == 1)
+                rbMale.IsChecked = true;
+            else
+                rbFemale.IsChecked = true;
+
+            txtImagePath.Text = doctor.ProfileImage;
+
+            if (!string.IsNullOrEmpty(doctor.ProfileImage))
+            {
+                imgPreview.Source = new BitmapImage(new Uri(doctor.ProfileImage));
+                borderPreview.Visibility = Visibility.Visible;
             }
         }
 
