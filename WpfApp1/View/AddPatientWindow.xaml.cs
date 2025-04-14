@@ -25,6 +25,8 @@ namespace WpfApp1.View
     {
         private string selectedImagePath;
         private readonly MySQLManager _dbManager;
+        private bool _isEditMode = false; // 수정 모드 여부
+        private int _patientId; // 수정할 환자의 ID
 
         public Patient NewPatient { get; private set; }
 
@@ -106,6 +108,7 @@ namespace WpfApp1.View
             // 새 환자 객체 생성
             NewPatient = new Patient
             {
+                Id = _patientId,
                 Name = txtName.Text,
                 Birth = dpBirth.SelectedDate.Value,
                 Gender = rbMale.IsChecked == true ? 1 : 0,
@@ -115,22 +118,58 @@ namespace WpfApp1.View
             // 데이터베이스에 저장
             try
             {
-                bool success = _dbManager.AddPatient(NewPatient);
+                bool success;
 
-                if (success)
+                if (_isEditMode)
                 {
-                    MessageBox.Show("환자 정보가 성공적으로 저장되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
-                    DialogResult = true;
-                    Close();
+                    // 수정 모드: 데이터 업데이트
+                    success = _dbManager.UpdatePatient(NewPatient);
+                    if (success)
+                        MessageBox.Show("환자 정보가 성공적으로 수정되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else
+                        MessageBox.Show("환자 정보 수정에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else
                 {
-                    MessageBox.Show("환자 정보 저장에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // 추가 모드: 데이터 삽입
+                    success = _dbManager.AddPatient(NewPatient);
+                    if (success)
+                        MessageBox.Show("환자 정보가 성공적으로 추가되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else
+                        MessageBox.Show("환자 정보 추가에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+
+                if (success)
+                    DialogResult = true;
+
+                Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"데이터 저장 중 오류 발생: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // 기존 데이터를 설정하는 메서드 (수정 모드 활성화)
+        public void SetInitialData(Patient patient)
+        {
+            _isEditMode = true; // 수정 모드 활성화
+            _patientId = patient.Id; // 수정할 환자의 ID 저장
+
+            txtName.Text = patient.Name;
+            dpBirth.SelectedDate = patient.Birth;
+
+            if (patient.Gender == 1)
+                rbMale.IsChecked = true;
+            else
+                rbFemale.IsChecked = true;
+
+            txtImagePath.Text = patient.ProfileImage;
+
+            if (!string.IsNullOrEmpty(patient.ProfileImage))
+            {
+                imgPreview.Source = new BitmapImage(new Uri(patient.ProfileImage));
+                borderPreview.Visibility = Visibility.Visible;
             }
         }
 

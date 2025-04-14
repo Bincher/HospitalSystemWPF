@@ -18,8 +18,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <!-- 수정 및 삭제 버튼 영역 -->
         </Grid.RowDefinitions>
-
+        
         <!-- 뒤로 가기 버튼 -->
         <Button Content="뒤로 가기" Click="GoBackButton_Click" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 
@@ -88,5 +90,22 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
+        <!-- 수정 및 삭제 버튼 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <!-- 수정 버튼 -->
+            <Button Content="수정"
+                    Command="{Binding EditPatientCommand}"
+                    CommandParameter="{Binding SelectedPatient}"
+                    Width="100"
+                    Margin ="10"/>
+
+            <!-- 삭제 버튼 -->
+            <Button Content ="삭제"
+                    Command="{Binding DeletePatientCommand}"
+                    CommandParameter="{Binding SelectedPatient}"
+                    Width ="100"
+                    Margin ="10"/>
+        </StackPanel>
     </Grid>
+    
 </Window>

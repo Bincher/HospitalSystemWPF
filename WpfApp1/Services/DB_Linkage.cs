@@ -289,6 +289,67 @@ namespace DB_Linkage.Service
             }
         }
 
+        public bool DeletePatient(int patientId)
+        {
+            string query = "DELETE FROM patient WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", patientId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during deleting patient: {ex.Message}");
+
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        public bool UpdatePatient(Patient patient)
+        {
+            string query = "UPDATE patient SET name=@Name, birth=@Birth, gender=@Gender, profile_image=@ProfileImage WHERE id=@Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", patient.Id);
+                    cmd.Parameters.AddWithValue("@Name", patient.Name);
+                    cmd.Parameters.AddWithValue("@Birth", patient.Birth);
+                    cmd.Parameters.AddWithValue("@Gender", patient.Gender);
+                    cmd.Parameters.AddWithValue("@ProfileImage", patient.ProfileImage ?? (object)DBNull.Value);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during updating patient: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
         public bool AddTreatment(Treatment treatment)
         {
             string query = "INSERT INTO treatment (date, complete, doctor_id, patient_id) VALUES (@DateTimeValue, @CompleteStatus, @DoctorIdValue, @PatientIdValue)";
