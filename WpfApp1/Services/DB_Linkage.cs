@@ -50,7 +50,7 @@ namespace DB_Linkage.Service
         public List<Doctor> GetDoctors()
         {
             List<Doctor> doctors = new List<Doctor>();
-            string query = "SELECT id, name, department, birth, gender, profile_image FROM doctor";
+            string query = "SELECT * FROM doctor WHERE is_deleted = 0";
 
             try
             {
@@ -87,7 +87,7 @@ namespace DB_Linkage.Service
         public List<Patient> GetPatients()
         {
             List<Patient> patients = new List<Patient>();
-            string query = "SELECT id, name, gender, birth, profile_image FROM patient";
+            string query = "SELECT id, name, gender, birth, profile_image FROM patient WHERE is_deleted = 0";
 
             try
             {
@@ -198,9 +198,38 @@ namespace DB_Linkage.Service
             }
         }
 
-        public bool DeleteDoctor(int doctorId)
+        public bool HardDeleteDoctor(int doctorId)
         {
             string query = "DELETE FROM doctor WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", doctorId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during deleting doctor: {ex.Message}");
+
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        public bool SoftDeleteDoctor(int doctorId)
+        {
+            string query = "UPDATE doctor SET is_deleted = 1 WHERE id = @Id";
 
             try
             {
@@ -289,7 +318,36 @@ namespace DB_Linkage.Service
             }
         }
 
-        public bool DeletePatient(int patientId)
+        public bool SoftDeletePatient(int patientId)
+        {
+            string query = "UPDATE patient SET is_deleted = 1 WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", patientId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during deleting patient: {ex.Message}");
+
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        public bool HardDeletePatient(int patientId)
         {
             string query = "DELETE FROM patient WHERE id = @Id";
 

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DB_Linkage.Service;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,8 @@ namespace WpfApp1.ViewModel
         }
 
         public ICommand EditDoctorCommand { get; }
-        public ICommand DeleteDoctorCommand { get; }
+        public ICommand SoftDeleteDoctorCommand { get; }
+        public ICommand HardDeleteDoctorCommand { get; }
 
         public DoctorViewModel(MainWindowViewModel mainWindowViewModel)
         {
@@ -49,7 +51,8 @@ namespace WpfApp1.ViewModel
 
             // Command 초기화
             EditDoctorCommand = new RelayCommand<Doctor>(EditDoctor);
-            DeleteDoctorCommand = new RelayCommand<Doctor>(DeleteDoctor);
+            SoftDeleteDoctorCommand = new RelayCommand<Doctor>(SoftDeleteDoctor);
+            HardDeleteDoctorCommand = new RelayCommand<Doctor>(HardDeleteDoctor);
         }
 
         public void LoadDoctorData()
@@ -75,7 +78,7 @@ namespace WpfApp1.ViewModel
             }
         }
 
-        private void DeleteDoctor(Doctor doctor)
+        private void SoftDeleteDoctor(Doctor doctor)
         {
             if (doctor == null) return;
 
@@ -84,7 +87,7 @@ namespace WpfApp1.ViewModel
 
             if (result == MessageBoxResult.Yes)
             {
-                bool success = _dbManager.DeleteDoctor(doctor.Id);
+                bool success = _dbManager.SoftDeleteDoctor(doctor.Id);
 
                 if (success)
                 {
@@ -95,6 +98,41 @@ namespace WpfApp1.ViewModel
                 {
                     MessageBox.Show("의사 삭제에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+        }
+
+        private void HardDeleteDoctor(Doctor doctor)
+        {
+            if (doctor == null) return;
+
+            var result = MessageBox.Show(
+                $"'{doctor.Name}' 의사를 영구 삭제하시겠습니까?",
+                "영구 삭제",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                
+                
+                    bool success = _dbManager.HardDeleteDoctor(doctor.Id);
+
+                    if (success)
+                    {
+                        MessageBox.Show("의사가 영구 삭제되었습니다.", "성공");
+                        LoadDoctorData();
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            "진료 기록이 있는 의사는 삭제할 수 없습니다.",
+                            "오류",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error
+                        );
+                    }
+                
             }
         }
 

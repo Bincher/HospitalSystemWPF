@@ -100,11 +100,20 @@
                     Margin ="10"/>
 
             <!-- 삭제 버튼 -->
-            <Button Content ="삭제"
-                    Command="{Binding DeletePatientCommand}"
-                    CommandParameter="{Binding SelectedPatient}"
-                    Width ="100"
-                    Margin ="10"/>
+            <Button Content="비활성화" 
+                Command="{Binding SoftDeletePatientCommand}"
+                CommandParameter="{Binding SelectedPatient}"
+                Width="100"
+                Margin="10"
+                Background="#FFD3D3D3"/>
+            <!-- 영구 삭제 버튼 추가 -->
+            <Button Content="영구 삭제" 
+                Command="{Binding HardDeletePatientCommand}"
+                CommandParameter="{Binding SelectedPatient}"
+                Width="100"
+                Margin="10"
+                Foreground="White"
+                Background="Red"/>
         </StackPanel>
     </Grid>
     

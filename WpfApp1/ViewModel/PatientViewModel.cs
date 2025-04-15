@@ -4,6 +4,7 @@ using DB_Linkage.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -36,7 +37,8 @@ namespace WpfApp1.ViewModel
         }
 
         public ICommand EditPatientCommand { get; }
-        public ICommand DeletePatientCommand { get; }
+        public ICommand SoftDeletePatientCommand { get; }
+        public ICommand HardDeletePatientCommand { get; }
 
         public PatientViewModel(MainWindowViewModel mainWindowViewModel)
         {
@@ -49,7 +51,8 @@ namespace WpfApp1.ViewModel
 
             // Command 초기화
             EditPatientCommand = new RelayCommand<Patient>(EditPatient);
-            DeletePatientCommand = new RelayCommand<Patient>(DeletePatient);
+            SoftDeletePatientCommand = new RelayCommand<Patient>(SoftDeletePatient);
+            HardDeletePatientCommand = new RelayCommand<Patient>(HardDeletePatient);
         }
 
         public void LoadPatientData()
@@ -75,7 +78,7 @@ namespace WpfApp1.ViewModel
             }
         }
 
-        private void DeletePatient(Patient patient)
+        private void SoftDeletePatient(Patient patient)
         {
             if (patient == null) return;
 
@@ -84,7 +87,7 @@ namespace WpfApp1.ViewModel
 
             if (result == MessageBoxResult.Yes)
             {
-                bool success = _dbManager.DeletePatient(patient.Id);
+                bool success = _dbManager.SoftDeletePatient(patient.Id);
 
                 if (success)
                 {
@@ -94,6 +97,34 @@ namespace WpfApp1.ViewModel
                 else
                 {
                     MessageBox.Show("환자 삭제에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void HardDeletePatient(Patient patient)
+        {
+            if (patient == null) return;
+
+            // 확인 메시지 표시
+            var result = MessageBox.Show(
+                $"'{patient.Name}' 환자를 영구 삭제하시겠습니까?",
+                "영구 삭제",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                bool success = _dbManager.HardDeletePatient(patient.Id);
+
+                if (success)
+                {
+                    MessageBox.Show("환자가 성공적으로 영구 삭제되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadPatientData(); // 목록 새로고침
+                }
+                else
+                {
+                    MessageBox.Show("진료데이터가 있는 환자는 삭제할 수 없습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
