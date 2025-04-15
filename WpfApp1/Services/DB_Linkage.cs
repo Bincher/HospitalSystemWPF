@@ -378,6 +378,69 @@ namespace DB_Linkage.Service
                 CloseConnection();
             }
         }
+
+        public bool UpdateTreatment(Treatment treatment)
+        {
+            string query = @"
+        UPDATE treatment 
+        SET 
+            date = @Date,
+            doctor_id = @DoctorId,
+            patient_id = @PatientId,
+            complete = @Complete
+        WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", treatment.Id);
+                    cmd.Parameters.AddWithValue("@Date", treatment.Date);
+                    cmd.Parameters.AddWithValue("@DoctorId", treatment.DoctorId);
+                    cmd.Parameters.AddWithValue("@PatientId", treatment.PatientId);
+                    cmd.Parameters.AddWithValue("@Complete", treatment.Complete ? 1 : 0);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating treatment: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
+        public bool DeleteTreatment(int treatmentId)
+        {
+            string query = "DELETE FROM treatment WHERE id = @Id";
+
+            try
+            {
+                OpenConnection();
+                using (var cmd = new MySqlCommand(query, Connection))
+                {
+                    cmd.Parameters.AddWithValue("@Id", treatmentId);
+
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting treatment: {ex.Message}");
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
     }
 
 }

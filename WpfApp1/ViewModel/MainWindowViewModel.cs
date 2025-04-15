@@ -19,6 +19,8 @@ namespace WpfApp1.ViewModel
         public ICommand ShowPatientCommand { get; }
         public ICommand ShowDoctorCommand { get; }
         public ICommand AddTreatmentCommand { get; }
+        public ICommand EditTreatmentCommand { get; }
+        public ICommand DeleteTreatmentCommand { get; }
 
         // DefaultView 속성 추가
         public object DefaultView { get; private set; }
@@ -86,6 +88,48 @@ namespace WpfApp1.ViewModel
             }
         }
 
+        private void EditTreatment(Treatment treatment)
+        {
+            if (treatment == null) return;
+
+            // 진료 수정 창 열기
+            AddTreatmentWindow editWindow = new AddTreatmentWindow();
+            editWindow.SetInitialData(treatment); // 기존 데이터 설정
+
+            if (editWindow.ShowDialog() == true)
+            {
+                LoadTreatmentData(); // 목록 새로고침
+            }
+        }
+
+        private void DeleteTreatment(Treatment treatment)
+        {
+            if (treatment == null) return;
+
+            // 확인 메시지 표시
+            var result = MessageBox.Show(
+                $"진료 기록(ID: {treatment.Id})을 삭제하시겠습니까?",
+                "삭제 확인",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning
+            );
+
+            if (result == MessageBoxResult.Yes)
+            {
+                bool success = _dbManager.DeleteTreatment(treatment.Id);
+
+                if (success)
+                {
+                    MessageBox.Show("진료 기록이 삭제되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadTreatmentData(); // 목록 새로고침
+                }
+                else
+                {
+                    MessageBox.Show("삭제에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private readonly MySQLManager _dbManager;
 
         public MainWindowViewModel()
@@ -100,6 +144,8 @@ namespace WpfApp1.ViewModel
             ShowPatientCommand = new RelayCommand(ShowPatient);
             ShowDoctorCommand = new RelayCommand(ShowDoctor);
             AddTreatmentCommand = new RelayCommand(AddTreatment);
+            EditTreatmentCommand = new RelayCommand<Treatment>(EditTreatment);
+            DeleteTreatmentCommand = new RelayCommand<Treatment>(DeleteTreatment);
         }
     }
 }

@@ -23,6 +23,9 @@ namespace WpfApp1.View
     {
         private readonly MySQLManager _dbManager;
 
+        private bool _isEditMode = false;
+        private int _treatmentId;
+
         public AddTreatmentWindow()
         {
             InitializeComponent();
@@ -31,6 +34,19 @@ namespace WpfApp1.View
             // 의사와 환자 목록 로드
             LoadDoctors();
             LoadPatients();
+        }
+
+        // 수정 모드 초기화
+        public void SetInitialData(Treatment treatment)
+        {
+            _isEditMode = true;
+            _treatmentId = treatment.Id;
+
+            // 기존 데이터 설정
+            dpDate.SelectedDate = DateTime.Parse(treatment.Date);
+            cbDoctors.SelectedValue = treatment.DoctorId;
+            cbPatients.SelectedValue = treatment.PatientId;
+            chkComplete.IsChecked = treatment.Complete;
         }
 
         private void LoadDoctors()
@@ -77,32 +93,38 @@ namespace WpfApp1.View
 
             // 새 진료 데이터 생성
             Treatment newTreatment = new Treatment
-    {
-        Date = treatmentDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
-        DoctorId = (int)cbDoctors.SelectedValue,
-        PatientId = (int)cbPatients.SelectedValue,
-        Complete = chkComplete.IsChecked ?? false
-    };
+            {
+                Id = _treatmentId,
+                Date = treatmentDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                DoctorId = (int)cbDoctors.SelectedValue,
+                PatientId = (int)cbPatients.SelectedValue,
+                Complete = chkComplete.IsChecked ?? false
+            };
 
             // 데이터베이스에 저장
             try
             {
-                bool success = _dbManager.AddTreatment(newTreatment);
+                bool success;
+
+                if (_isEditMode)
+                    success = _dbManager.UpdateTreatment(newTreatment); // 수정
+                else
+                    success = _dbManager.AddTreatment(newTreatment); // 추가
 
                 if (success)
                 {
-                    MessageBox.Show("진료 정보가 성공적으로 저장되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("저장되었습니다.", "성공", MessageBoxButton.OK, MessageBoxImage.Information);
                     DialogResult = true;
                     Close();
                 }
                 else
                 {
-                    MessageBox.Show("진료 정보 저장에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("저장에 실패했습니다.", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"데이터 저장 중 오류 발생: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"오류 발생: {ex.Message}", "오류", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WpfApp1"
         xmlns:converters="clr-namespace:WpfApp1.ViewModel.Converters"
         mc:Ignorable="d"
-        Title="의사 정보 시스템" Height="500" Width="800">
+        Title="의사 정보 시스템" Height="600" Width="1000">
 
     <DockPanel>
 
@@ -31,6 +31,30 @@
                     <DataGridTextColumn Header="의사 이름" Binding="{Binding DoctorName}" Width="150"/>
                     <DataGridTextColumn Header="환자 이름" Binding="{Binding PatientName}" Width="150"/>
                     <DataGridCheckBoxColumn Header="진료 완료 여부" Binding="{Binding Complete}" Width="100"/>
+                    <!-- 수정 버튼 -->
+                    <DataGridTemplateColumn Header="수정" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="수정" 
+                            Command="{Binding DataContext.EditTreatmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                            CommandParameter="{Binding}"
+                            Margin="5"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- 삭제 버튼 -->
+                    <DataGridTemplateColumn Header="삭제" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="삭제" 
+                            Command="{Binding DataContext.DeleteTreatmentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                            CommandParameter="{Binding}"
+                            Margin="5"
+                            Foreground="Red"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
